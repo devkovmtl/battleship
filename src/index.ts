@@ -1,7 +1,9 @@
+import './index.css'
+
 function createComponent(
   tagName: string,
   id?: string,
-  classes?: [string],
+  classes?: Array<string>,
   content?: string | HTMLElement
 ): HTMLElement {
   const element = document.createElement(tagName)
@@ -27,4 +29,11 @@ function createComponent(
 
 const root = document.querySelector('#root')
 
-root?.appendChild(createComponent('div', 'container', ['text-gray-600']))
+root?.appendChild(
+  createComponent(
+    'div',
+    'container',
+    ['bg-blue-400', 'text-gray-400'],
+    'Hello World'
+  )
+)
