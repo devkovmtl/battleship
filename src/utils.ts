@@ -1,4 +1,4 @@
-const createAnArray = function (length: number): Array<undefined> {
+const createAnArray = function (length: number): Array<any> {
   if (!length || typeof length !== 'number') {
     throw new Error('Length is required and must be a number')
   }

@@ -6,6 +6,10 @@ const root = document.querySelector('#root')
 
 const s1 = createShip('Cruiser', 3)
 console.log(s1)
+s1.body[0] = 4
+s1.body[1] = 5
+s1.body[2] = 6
+
 root?.appendChild(
   createComponent(
     'div',
@@ -14,3 +18,14 @@ root?.appendChild(
     'Hello World'
   )
 )
+
+s1.hit(1)
+s1.hit(2)
+console.log(s1)
+s1.hit(4)
+s1.hit(20)
+s1.hit(21)
+s1.hit(5)
+console.log(s1.isSunk())
+s1.hit(6)
+console.log(s1.isSunk())

@@ -13,10 +13,14 @@ function createShip(name: string, length: number): Ship {
     name,
     length,
     body: createAnArray(length),
-    isHit: function (x: any) {
-      return this.body.indexOf(x) !== -1
+    hit: function (x: any) {
+      const idx = this.body.indexOf(x)
+      if (idx !== -1 && this.body[idx] !== 'HIT') {
+        this.body[idx] = 'HIT'
+      }
+      return idx !== -1
     },
-    hasBeenSunk: function () {
+    isSunk: function () {
       return this.body.every(
         (el) => el !== null && typeof el === 'string' && el === 'HIT'
       )
