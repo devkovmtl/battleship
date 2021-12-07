@@ -1,5 +1,5 @@
 import { Ship } from './interface'
-
+import { createAnArray } from './utils'
 // Factory function creating ship
 function createShip(name: string, length: number): Ship {
   if (!name || !name.trim().length) {
@@ -12,11 +12,14 @@ function createShip(name: string, length: number): Ship {
   const ship = {
     name,
     length,
-    isHit: function (x: number) {
-      return true
+    body: createAnArray(length),
+    isHit: function (x: any) {
+      return this.body.indexOf(x) !== -1
     },
     hasBeenSunk: function () {
-      return length <= 0
+      return this.body.every(
+        (el) => el !== null && typeof el === 'string' && el === 'HIT'
+      )
     },
   }
 

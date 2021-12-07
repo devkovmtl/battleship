@@ -1,7 +1,8 @@
 interface Ship {
   name: string
   length: number
-  isHit: (a: number) => boolean
+  body: Array<undefined | number | string>
+  isHit: (a: any) => boolean
   hasBeenSunk: () => boolean
 }
 
