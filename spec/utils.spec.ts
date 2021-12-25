@@ -21,4 +21,10 @@ describe('test create an array', () => {
     expect(array.length).toBe(3)
     expect(array[1]).toBe(undefined)
   })
+
+  it('should create an array with length 3 with element "bob"', () => {
+    const array = createAnArray(3, 'bob')
+    expect(array.length).toBe(3)
+    expect(array[1]).toBe('bob')
+  })
 })
