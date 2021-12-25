@@ -1,14 +1,11 @@
 import './index.css'
 import createComponent from './createComponent'
-import createShip from './ship'
+import createShip from './Ship/ship'
 
 const root = document.querySelector('#root')
 
 const s1 = createShip('Cruiser', 3)
 console.log(s1)
-s1.body[0] = 4
-s1.body[1] = 5
-s1.body[2] = 6
 
 root?.appendChild(
   createComponent(
