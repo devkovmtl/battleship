@@ -17,4 +17,33 @@ const createAnArray = function (length: number, element?: string): Array<any> {
   return a
 }
 
-export { createAnArray }
+// return an array of array
+// (2,2) => [[undefined, undefined],[undefined,undefined]]
+const createArrayOfArray = (
+  row: number = 10,
+  col: number = 10,
+  element: string | number | undefined = undefined
+) => {
+  let grid = []
+
+  if (row <= 0) {
+    row = 10
+  }
+
+  if (col <= 0) {
+    col = 10
+  }
+
+  for (let i = 0; i < row; i++) {
+    let r = []
+    for (let j = 0; j < col; j++) {
+      r.push(element)
+    }
+
+    grid.push(r)
+  }
+
+  return grid
+}
+
+export { createAnArray, createArrayOfArray }
