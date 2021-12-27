@@ -2,6 +2,8 @@ import {
   BOAT,
   DESTROYER,
   DESTROYER_LENGTH,
+  HIT,
+  MISS,
   SUBMARINE,
   SUBMARINE_LENGTH,
   WATER,
@@ -10,7 +12,7 @@ import { Oriention } from '../src/enum'
 import createGameboard from '../src/Gameboard/gameboard'
 import createShip from '../src/Ship/ship'
 
-describe('test gameboard factory function', () => {
+describe('test gameboard factory create gameboard', () => {
   it('should create a grid 10 by 10', () => {
     const boardP1 = createGameboard()
     expect(boardP1.grid.length).toBe(10)
@@ -22,7 +24,9 @@ describe('test gameboard factory function', () => {
     expect(boardP1.grid.length).toBe(10)
     expect(boardP1.grid[0].length).toBe(10)
   })
+})
 
+describe('test place ship on gameboard', () => {
   it('should throw an error if no ship is provided', () => {
     const boardP1 = createGameboard()
     expect(() => {
@@ -90,5 +94,34 @@ describe('test gameboard factory function', () => {
     boardP1.placeCharacter(2, 0, destroyer, Oriention.Vertical)
 
     expect(boardP1.grid[2][0] === BOAT).toBeFalsy()
+  })
+})
+
+describe('test receive attack', () => {
+  it('should mark hit if boat', () => {
+    const boardP1 = createGameboard(4, 4)
+    const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
+    boardP1.placeCharacter(0, 0, destroyer, Oriention.Vertical)
+    boardP1.receiveAttack(1, 0)
+
+    expect(boardP1.grid[1][0] === HIT).toBeTruthy()
+  })
+
+  it('should mark Miss if no Boat', () => {
+    const boardP1 = createGameboard(4, 4)
+    const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
+    boardP1.placeCharacter(0, 0, destroyer, Oriention.Vertical)
+    boardP1.receiveAttack(1, 1)
+
+    expect(boardP1.grid[1][1] === MISS).toBeTruthy()
+  })
+
+  it('should do nothing if Gameboard is already miss', () => {
+    const boardP1 = createGameboard(4, 4)
+    const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
+    boardP1.placeCharacter(0, 0, destroyer, Oriention.Vertical)
+    boardP1.receiveAttack(1, 1)
+
+    expect(boardP1.receiveAttack(1, 1)).toBeFalsy()
   })
 })

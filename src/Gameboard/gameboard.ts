@@ -1,4 +1,4 @@
-import { BOAT, WATER } from '../constants'
+import { BOAT, HIT, MISS, WATER } from '../constants'
 import { Ship } from '../interface'
 import { createArrayOfArray } from '../utils'
 import { Oriention } from '../enum'
@@ -64,46 +64,31 @@ function createGameboard(row: number = 10, col: number = 10) {
       if (canAddShip) {
         for (let i = 0; i < ship.length; i++) {
           if (orientation === Oriention.Horizontal) {
+            // WE PLACE A SHIP HORIZONTAL POSITION
             // console.log('INSERT BOAT')
             this.grid[row][col + i] = BOAT
             // player Location
           }
           if (orientation === Oriention.Vertical) {
             this.grid[row + i][col] = BOAT
+            // WE PLACE A SHIP VERTICAL POSITION
             // player location
           }
         }
+      }
+    },
+    receiveAttack(row: number, col: number) {
+      if (this.grid[row][col] === BOAT) {
+        this.grid[row][col] = HIT
+        return true
+      } else if (this.grid[row][col] === WATER) {
+        this.grid[row][col] = MISS
+        return false
+      } else {
+        return false
       }
     },
   }
 }
 
 export default createGameboard
-// import { Ship } from '../interface'
-
-// const createGameBoard = function (playerName: string, playerGrid: Array<any>) {
-//   let gameBoard: HTMLDivElement = document.createElement('div')
-//   gameBoard.classList.add('gameboard', `gameboard-${playerName}`)
-
-//   const col = 10
-//   const row = 10
-
-//   for (let i = 0; i < row * row; i++) {
-//     const cell = document.createElement('div')
-//     cell.dataset.id = `${i}`
-//     gameBoard.appendChild(cell)
-//     playerGrid.push(cell)
-//   }
-
-//   function placeShip(ship: Ship, position: number) {
-//     console.log(ship)
-
-//     ship.body.forEach((index) =>
-//       playerGrid[position + index].classList.add('taken', ship.name)
-//     )
-//   }
-
-//   return { gameBoard, placeShip }
-// }
-
-// export { createGameBoard }
