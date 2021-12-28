@@ -22,7 +22,7 @@ const createAnArray = function (length: number, element?: string): Array<any> {
 const createArrayOfArray = (
   row: number = 10,
   col: number = 10,
-  element: string | number | undefined = undefined
+  element: any = undefined
 ) => {
   let grid = []
 

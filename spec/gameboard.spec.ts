@@ -47,7 +47,7 @@ describe('test place ship on gameboard', () => {
     const boardP1 = createGameboard(4, 4)
     const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
     boardP1.placeCharacter(3, 3, submarine)
-    expect(boardP1.grid[3][3] === BOAT).toBeTruthy()
+    expect(boardP1.grid[3][3] === `${submarine.name}-0`).toBeTruthy()
   })
 
   it('should not place the ship if length overflow a ship on the grid', () => {
@@ -74,7 +74,7 @@ describe('test place ship on gameboard', () => {
     const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
     boardP1.placeCharacter(0, 0, destroyer, Oriention.Vertical)
 
-    expect(boardP1.grid[1][0] === BOAT).toBeTruthy()
+    expect(boardP1.grid[1][0] === `${destroyer.name}-1`).toBeTruthy()
   })
 
   it('should not place ship vertically if bigger than col', () => {
@@ -105,6 +105,16 @@ describe('test receive attack', () => {
     boardP1.receiveAttack(1, 0)
 
     expect(boardP1.grid[1][0] === HIT).toBeTruthy()
+  })
+
+  it('should mark the correct boat as hit', () => {
+    const boardP1 = createGameboard(4, 4)
+    const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
+    boardP1.placeCharacter(0, 0, destroyer, Oriention.Vertical)
+    boardP1.receiveAttack(0, 0)
+
+    expect(destroyer.body[0] === HIT).toBeTruthy()
+    expect(boardP1.grid[0][0] === HIT).toBeTruthy()
   })
 
   it('should mark Miss if no Boat', () => {

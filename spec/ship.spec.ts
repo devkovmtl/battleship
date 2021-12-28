@@ -50,7 +50,7 @@ describe('test creation of ship', () => {
     const destroyer = createShip('Destroyer', 2)
     expect(destroyer.hit(0)).toBeTruthy()
     expect(destroyer.hit(1)).toBeTruthy()
-    console.log(destroyer.body)
+    // console.log(destroyer.body)
     expect(destroyer.isSunk()).toBeTruthy()
   })
 })

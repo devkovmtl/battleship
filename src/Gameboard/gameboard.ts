@@ -1,4 +1,14 @@
-import { BOAT, HIT, MISS, WATER } from '../constants'
+import {
+  BATTLESHIP,
+  BOAT,
+  CARRIER,
+  CRUISER,
+  DESTROYER,
+  HIT,
+  MISS,
+  SUBMARINE,
+  WATER,
+} from '../constants'
 import { Ship } from '../interface'
 import { createArrayOfArray } from '../utils'
 import { Oriention } from '../enum'
@@ -11,6 +21,7 @@ function createGameboard(row: number = 10, col: number = 10) {
     col = 10
   }
   let grid = createArrayOfArray(row, col, WATER)
+  let ships: Ship[] = []
 
   return {
     grid,
@@ -66,19 +77,33 @@ function createGameboard(row: number = 10, col: number = 10) {
           if (orientation === Oriention.Horizontal) {
             // WE PLACE A SHIP HORIZONTAL POSITION
             // console.log('INSERT BOAT')
-            this.grid[row][col + i] = BOAT
+            this.grid[row][col + i] = `${ship.name}-${i}`
             // player Location
+            ships.push(ship)
           }
           if (orientation === Oriention.Vertical) {
-            this.grid[row + i][col] = BOAT
+            this.grid[row + i][col] = `${ship.name}-${i}`
             // WE PLACE A SHIP VERTICAL POSITION
             // player location
+            ships.push(ship)
           }
         }
       }
     },
     receiveAttack(row: number, col: number) {
-      if (this.grid[row][col] === BOAT) {
+      // console.log('RECEIVE ATK:', this.grid[row][col])
+      if (
+        this.grid[row][col].split('-')[0] === SUBMARINE ||
+        this.grid[row][col].split('-')[0] === DESTROYER ||
+        this.grid[row][col].split('-')[0] === CRUISER ||
+        this.grid[row][col].split('-')[0] === BATTLESHIP ||
+        this.grid[row][col].split('-')[0] === CARRIER
+      ) {
+        // console.log(ships)
+        const s = ships.find(
+          (s) => s.name === this.grid[row][col].split('-')[0]
+        )
+        s?.hit(+this.grid[row][col].split('-')[1])
         this.grid[row][col] = HIT
         return true
       } else if (this.grid[row][col] === WATER) {
