@@ -135,3 +135,21 @@ describe('test receive attack', () => {
     expect(boardP1.receiveAttack(1, 1)).toBeFalsy()
   })
 })
+
+describe('test all Ship Sunk', () => {
+  it('should return true if all ship are sunk', () => {
+    const boardP1 = createGameboard()
+    const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
+    boardP1.placeCharacter(0, 0, submarine)
+    boardP1.receiveAttack(0, 0)
+    expect(boardP1.allShipsSunk()).toBeTruthy()
+  })
+
+  it('should return false if not all ship are sunk', () => {
+    const boardP1 = createGameboard()
+    const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
+    boardP1.placeCharacter(0, 0, submarine)
+    boardP1.receiveAttack(0, 1)
+    expect(boardP1.allShipsSunk()).toBeFalsy()
+  })
+})

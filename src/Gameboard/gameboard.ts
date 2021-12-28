@@ -113,6 +113,14 @@ function createGameboard(row: number = 10, col: number = 10) {
         return false
       }
     },
+    allShipsSunk(): boolean {
+      let a = []
+      for (let index = 0; index < ships.length; index++) {
+        const ship = ships[index]
+        a.push(ship.isSunk())
+      }
+      return a.every((e) => e === true)
+    },
   }
 }
 
