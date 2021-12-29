@@ -8,6 +8,7 @@ interface Player {
   ships: Ship[]
   attackEnemyBoard: (r: number, c: number, gb: Gameboard) => boolean
   allShipsSunk: () => boolean
+  placeRandomShip: (ship: Ship) => void
 }
 
 export { Player }

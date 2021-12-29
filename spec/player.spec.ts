@@ -1,4 +1,4 @@
-import { HIT } from '../src/constants'
+import { HIT, WATER } from '../src/constants'
 import { Oriention, PlayerType } from '../src/enum'
 import createPlayer from '../src/Player/player'
 
@@ -103,5 +103,16 @@ describe('should test the player', () => {
     // expect(p1.allShipsSunk()).toBeFalsy()
     expect(() => p2.gameBoard.allShipsSunk()).toBeTruthy()
     expect(p2.allShipsSunk()).toBeTruthy()
+  })
+
+  it('should place random ship', () => {
+    const p1 = createPlayer('Player One', PlayerType.COMPUTER)
+    p1.placeRandomShip(p1.ships[0])
+    let arr = []
+    for (let i = 0; i < p1.gameBoard.grid.length; i++) {
+      const el = p1.gameBoard.grid[i]
+      arr.push(el.every((e) => e === WATER))
+    }
+    expect(arr.every((e) => e === true)).toBeFalsy()
   })
 })

@@ -1,4 +1,4 @@
-import { PlayerType } from '../enum'
+import { Oriention, PlayerType } from '../enum'
 import {
   BATTLESHIP,
   BATTLESHIP_LENGTH,
@@ -13,9 +13,12 @@ import {
 } from '../constants'
 import createShip from '../Ship/ship'
 import createGameboard from '../Gameboard/gameboard'
-import { Gameboard, Player } from '../interface'
+import { Gameboard, Player, Ship } from '../interface'
+import { getRandomInt } from '../utils'
 
 function createPlayer(name: string, playerType: PlayerType): Player {
+  // @ts-ignore
+  let playerLocations = {}
   return {
     name,
     playerType,
@@ -41,6 +44,24 @@ function createPlayer(name: string, playerType: PlayerType): Player {
       }
       //   console.log('allShipSunk', total)
       return total === this.ships.length
+    },
+    placeRandomShip: function (ship: Ship) {
+      let shipPlaced = false
+      const maxSizeRow = this.gameBoard.grid.length
+      const maxSizeCol = this.gameBoard.grid[0].length
+      while (!shipPlaced) {
+        let x = getRandomInt(maxSizeRow)
+        let y = getRandomInt(maxSizeCol)
+        let orientation =
+          getRandomInt(3) === 1 ? Oriention.Horizontal : Oriention.Vertical
+        // @ts-ignore
+        if (!playerLocations[`${x}-${y}`]) {
+          this.gameBoard.placeCharacter(x, y, ship, orientation)
+          shipPlaced = true
+          // @ts-ignore
+          playerLocations[`${x}-${y}`] = true
+        }
+      }
     },
   }
 }
