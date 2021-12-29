@@ -13,9 +13,9 @@ import {
 } from '../constants'
 import createShip from '../Ship/ship'
 import createGameboard from '../Gameboard/gameboard'
-import { Gameboard } from '../interface/gameboard'
+import { Gameboard, Player } from '../interface'
 
-function createPlayer(name: string, playerType: PlayerType) {
+function createPlayer(name: string, playerType: PlayerType): Player {
   return {
     name,
     playerType,
