@@ -39,14 +39,14 @@ describe('test place ship on gameboard', () => {
     const boardP1 = createGameboard()
     const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
     expect(() => {
-      boardP1.placeCharacter(11, 10, submarine)
+      boardP1.placeCharacter(11, 10, submarine, Oriention.Horizontal)
     }).toThrow()
   })
 
   it('should place a ship on the grid', () => {
     const boardP1 = createGameboard(4, 4)
     const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
-    boardP1.placeCharacter(3, 3, submarine)
+    boardP1.placeCharacter(3, 3, submarine, Oriention.Horizontal)
     expect(boardP1.grid[3][3] === `${submarine.name}-0`).toBeTruthy()
   })
 
@@ -54,7 +54,9 @@ describe('test place ship on gameboard', () => {
     const boardP1 = createGameboard(4, 4)
     const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
 
-    expect(boardP1.placeCharacter(1, 3, destroyer)).toBeFalsy()
+    expect(
+      boardP1.placeCharacter(1, 3, destroyer, Oriention.Horizontal)
+    ).toBeFalsy()
   })
 
   it('should not place the ship if not empty case', () => {
@@ -89,7 +91,7 @@ describe('test place ship on gameboard', () => {
   it('should not place a ship if already ship for vertical position', () => {
     const boardP1 = createGameboard(4, 4)
     const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
-    boardP1.placeCharacter(3, 0, submarine)
+    boardP1.placeCharacter(3, 0, submarine, Oriention.Horizontal)
     const destroyer = createShip(DESTROYER, DESTROYER_LENGTH)
     boardP1.placeCharacter(2, 0, destroyer, Oriention.Vertical)
 
@@ -140,7 +142,7 @@ describe('test all Ship Sunk', () => {
   it('should return true if all ship are sunk', () => {
     const boardP1 = createGameboard()
     const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
-    boardP1.placeCharacter(0, 0, submarine)
+    boardP1.placeCharacter(0, 0, submarine, Oriention.Horizontal)
     boardP1.receiveAttack(0, 0)
     expect(boardP1.allShipsSunk()).toBeTruthy()
   })
@@ -148,7 +150,7 @@ describe('test all Ship Sunk', () => {
   it('should return false if not all ship are sunk', () => {
     const boardP1 = createGameboard()
     const submarine = createShip(SUBMARINE, SUBMARINE_LENGTH)
-    boardP1.placeCharacter(0, 0, submarine)
+    boardP1.placeCharacter(0, 0, submarine, Oriention.Horizontal)
     boardP1.receiveAttack(0, 1)
     expect(boardP1.allShipsSunk()).toBeFalsy()
   })

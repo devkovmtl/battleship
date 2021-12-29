@@ -9,11 +9,11 @@ import {
   SUBMARINE,
   WATER,
 } from '../constants'
-import { Ship } from '../interface'
+import { Ship, Gameboard } from '../interface'
 import { createArrayOfArray } from '../utils'
 import { Oriention } from '../enum'
 
-function createGameboard(row: number = 10, col: number = 10) {
+function createGameboard(row: number = 10, col: number = 10): Gameboard {
   if (row <= 0) {
     row = 10
   }

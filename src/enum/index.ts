@@ -3,4 +3,9 @@ enum Oriention {
   Vertical = 'Vertical',
 }
 
-export { Oriention }
+enum PlayerType {
+  USER = 'user',
+  COMPUTER = 'computer',
+}
+
+export { Oriention, PlayerType }
