@@ -12,6 +12,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(png|jpg|jpeg|svg|gif)$/i,
+        type: 'asset',
+      },
+      {
         test: /\.css?$/,
         use: [
           IN_PROD ? MiniCssExtractPlugin.loader : 'style-loader',
@@ -42,6 +46,7 @@ module.exports = {
   ],
   output: {
     filename: '[name].bundle.js',
+    assetModuleFilename: 'images/[hash][ext][query]',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
