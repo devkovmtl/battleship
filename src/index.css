@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ocean: #09c3db;
+  --grid-width: 400px;
+  --grid-height: 400px;
+  --submarine: #26c6da;
+  --destroyer: #5c6bc0;
+  --cruiser: #00897b;
+  --battleship: #b0bec5;
+  --carrier: #607d8b;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -11,4 +22,95 @@
 body {
   height: 100vh;
   width: 100vw;
+}
+
+.row-container {
+  display: flex;
+}
+
+.cell-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(133, 205, 250, 0.836);
+  border-radius: 8px;
+  background-color: rgb(133, 205, 250);
+}
+
+.ships-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 0.5rem;
+  max-width: 400px;
+}
+
+.ship-container {
+  margin: 8px 12px;
+}
+
+.ship-cell {
+  width: 40px;
+  height: 40px;
+}
+
+.submarine-container {
+  width: 40px;
+  height: 40px;
+  background-color: var(--submarine);
+}
+
+.submarine-container-vertical {
+  width: 40px;
+  height: 40px;
+  background-color: var(--submarine);
+}
+
+.destroyer-container {
+  width: 80px;
+  height: 40px;
+  background-color: var(--destroyer);
+}
+
+.destroyer-container-vertical {
+  width: 40px;
+  height: 80px;
+  background-color: var(--destroyer);
+}
+
+.cruiser-container {
+  width: 120px;
+  height: 40px;
+  background-color: var(--cruiser);
+}
+
+.cruiser-container-vertical {
+  width: 40px;
+  height: 120px;
+  background-color: var(--cruiser);
+}
+
+.battleship-container {
+  width: 160px;
+  height: 40px;
+  background-color: var(--battleship);
+}
+
+.battleship-container-vertical {
+  width: 40px;
+  height: 160px;
+  background-color: var(--battleship);
+}
+
+.carrier-container {
+  width: 200px;
+  height: 40px;
+  background-color: var(--carrier);
+}
+
+.carrier-container-vertical {
+  width: 40px;
+  height: 200px;
+  background-color: var(--carrier);
 }
