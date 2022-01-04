@@ -18,6 +18,8 @@ const playerTwoShipContainer = document.querySelector(
   '.player-two-ship-container'
 )
 
+const btnStart = document.querySelector('.btn-start')
+
 let isHorizontal = true
 
 const playerOne = createPlayer('Player One', PlayerType.USER)
@@ -27,6 +29,9 @@ let draggedShip: HTMLElement
 let draggedShipLength = 0
 let draggedShipName = ''
 let userSquaresList: HTMLDivElement[] = []
+
+let gameStarted = false
+let gameOver = false
 
 function insertImageBackground() {
   const imgUIContainer = document.querySelector('.ui-img-container')
@@ -67,7 +72,9 @@ function createGridHTMLELement(grid: any[][], isEnnemyGrid: boolean) {
       cellContainer.dataset.id = `${i}-${j}`
       cellContainer.id = `cell-${i}-${j}`
       cellContainer.classList.add('cell-container')
-
+      if (isEnnemyGrid) {
+        cellContainer.classList.add('cpu-cell-container')
+      }
       if (isEnnemyGrid && grid[i][j] === BOAT) {
         cellContainer.textContent = WATER
       } else {
@@ -151,7 +158,6 @@ function onDragStart(e: Event) {
 function onDragDrop(e: any) {
   e.preventDefault()
   const target = e.target
-
   if (!target) {
     return
   }
@@ -172,10 +178,8 @@ function onDragDrop(e: any) {
   }
 
   if (isHorizontal) {
-    console.log(draggedShipName, draggedShipLength)
     for (let i = 0; i < draggedShipLength; i++) {
       const gridCell = document.querySelector(`#cell-${row}-${col + i}`)
-      console.log(gridCell)
       if (gridCell) {
         gridCell.textContent = BOAT
         gridCell.classList.add(`${draggedShipName}`)
@@ -184,7 +188,6 @@ function onDragDrop(e: any) {
   } else {
     for (let i = 0; i < draggedShipLength; i++) {
       const gridCell = document.querySelector(`#cell-${row + i}-${col}`)
-      console.log(gridCell)
       if (gridCell) {
         gridCell.textContent = BOAT
         gridCell.classList.add(`${draggedShipName}`)
@@ -197,6 +200,49 @@ function onDragOver(e: Event) {
   e.preventDefault()
 }
 
+function onBtnStart() {
+  if (playerOneShipContainer && playerOneShipContainer?.childNodes.length > 1) {
+    alert('First Place all your ships in the gameboard')
+    return
+  } else {
+    if (btnStart) {
+      gameStarted = true
+      gameLoop()
+    }
+  }
+}
+
+function gameLoop() {
+  console.log('Test')
+
+  // while(!gameOver) {
+  //   if(playerOne.allShipsSunk()) {
+  //     gameOver = true
+  // gameStarted = false
+  //     alert('Computer Win!')
+  //   }
+  //   if(playerTwo.allShipsSunk()) {
+  //     gameOver = true
+  // gameStarted = false
+  //     alert('You Win!')
+  //   }
+  // }
+}
+
+function attackEnemyBoard(e: Event) {
+  if (!gameStarted || gameOver) {
+    alert('please place all your ship')
+    return
+  }
+
+  // @ts-ignore
+  const row = +e.target.id.split('-')[1]
+  // @ts-ignore
+  const col = +e.target.id.split('-')[2]
+  playerOne.attackEnemyBoard(row, col, playerTwo.gameBoard)
+  console.log(playerTwo.gameBoard.grid)
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   insertImageBackground()
   const btnRotateShip = document.querySelector('.btn-rotate-ship')
@@ -206,12 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // @ts-ignore
   playerTwoName?.innerHTML = playerTwo.name
 
-  // SHOW THE GRID
+  // Show player grid
   showGrid(
     playerOneGrid,
     createGridHTMLELement(playerOne.gameBoard.grid, false)
   )
+  // show cpu grid
+  showGrid(playerTwoGrid, createGridHTMLELement(playerTwo.gameBoard.grid, true))
 
+  // add the ships for the player
   for (let i = 0; i < playerOne.ships.length; i++) {
     const ship = playerOne.ships[i]
     const htmlShipElement = createShipHTMLElement(
@@ -222,11 +271,26 @@ document.addEventListener('DOMContentLoaded', () => {
     htmlShipElement.addEventListener('dragstart', onDragStart)
   }
 
-  showGrid(playerTwoGrid, createGridHTMLELement(playerTwo.gameBoard.grid, true))
+  // place cpu ships on the grid
+  for (let i = 0; i < playerTwo.ships.length; i++) {
+    playerTwo.placeRandomShip(playerTwo.ships[i])
+  }
 
+  console.log(playerTwo.gameBoard.grid)
+
+  // rotate the ship vertical or horizontal
   btnRotateShip?.addEventListener('click', rotate)
+  // drag and drop the ship
   userSquaresList?.forEach((gridCell: HTMLDivElement) => {
     gridCell.addEventListener('drop', onDragDrop)
     gridCell.addEventListener('dragover', onDragOver)
   })
+  // btn start
+  btnStart?.addEventListener('click', onBtnStart)
+
+  // grab the cpu cells to be able to click to attack the ships
+  const cpuCells = document.querySelectorAll('.cpu-cell-container')
+  cpuCells.forEach((cpuCell) =>
+    cpuCell.addEventListener('click', attackEnemyBoard)
+  )
 })
