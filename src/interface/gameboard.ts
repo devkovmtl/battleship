@@ -3,6 +3,7 @@ import { Oriention } from '../enum'
 
 interface Gameboard {
   grid: any[][]
+  ships: Ship[]
   placeCharacter: (
     row: number,
     col: number,

@@ -25,6 +25,7 @@ function createGameboard(row: number = 10, col: number = 10): Gameboard {
 
   return {
     grid,
+    ships,
     placeCharacter(
       row: number,
       col: number,
@@ -79,15 +80,14 @@ function createGameboard(row: number = 10, col: number = 10): Gameboard {
             // console.log('INSERT BOAT')
             this.grid[row][col + i] = `${ship.name}-${i}`
             // player Location
-            ships.push(ship)
           }
           if (orientation === Oriention.Vertical) {
             this.grid[row + i][col] = `${ship.name}-${i}`
             // WE PLACE A SHIP VERTICAL POSITION
             // player location
-            ships.push(ship)
           }
         }
+        ships.push(ship)
       }
     },
     receiveAttack(row: number, col: number) {

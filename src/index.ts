@@ -65,7 +65,7 @@ function createGridHTMLELement(grid: any[][], isEnnemyGrid: boolean) {
       const cell = row[j]
       const cellContainer = document.createElement('div')
       cellContainer.dataset.id = `${i}-${j}`
-      cellContainer.id = `${i}-${j}`
+      cellContainer.id = `cell-${i}-${j}`
       cellContainer.classList.add('cell-container')
 
       if (isEnnemyGrid && grid[i][j] === BOAT) {
@@ -87,15 +87,15 @@ function createShipHTMLElement(name: string, length: number): HTMLElement {
   const shipBody = document.createElement('div')
   shipBody.classList.add('ship-container', `${name}-container`)
   // shipBody.style.width = `${40 * length}px`
-  shipBody.style.borderRadius = `12px`
   shipBody.setAttribute('draggable', 'true')
 
   // we create cell for the length to append
   // to body
   for (let i = 0; i < length; i++) {
     const cell = document.createElement('div')
-    cell.classList.add(`${name}-i`)
+    cell.classList.add(`${name}-${i}`)
     cell.dataset.id = `${i}`
+    cell.textContent = BOAT
     shipBody.appendChild(cell)
   }
 
@@ -151,19 +151,46 @@ function onDragStart(e: Event) {
 function onDragDrop(e: any) {
   e.preventDefault()
   const target = e.target
-  console.log('DragDrop', e.target.id)
+
   if (!target) {
     return
   }
 
-  const row = +target.id.split('-')[0]
-  const col = +target.id.split('-')[1]
+  const row = +target.id.split('-')[1]
+  const col = +target.id.split('-')[2]
   const ship = createShip(draggedShipName, draggedShipLength)
   const orientation = isHorizontal ? Oriention.Horizontal : Oriention.Vertical
   playerOne.gameBoard.placeCharacter(row, col, ship, orientation)
-  console.log(playerOne.gameBoard.grid)
+  const index = playerOne.gameBoard.ships.findIndex(
+    (e) => e.name === draggedShipName
+  )
 
-  playerOneShipContainer?.removeChild(draggedShip)
+  if (index >= 0) {
+    playerOneShipContainer?.removeChild(draggedShip)
+  } else {
+    return
+  }
+
+  if (isHorizontal) {
+    console.log(draggedShipName, draggedShipLength)
+    for (let i = 0; i < draggedShipLength; i++) {
+      const gridCell = document.querySelector(`#cell-${row}-${col + i}`)
+      console.log(gridCell)
+      if (gridCell) {
+        gridCell.textContent = BOAT
+        gridCell.classList.add(`${draggedShipName}`)
+      }
+    }
+  } else {
+    for (let i = 0; i < draggedShipLength; i++) {
+      const gridCell = document.querySelector(`#cell-${row + i}-${col}`)
+      console.log(gridCell)
+      if (gridCell) {
+        gridCell.textContent = BOAT
+        gridCell.classList.add(`${draggedShipName}`)
+      }
+    }
+  }
 }
 
 function onDragOver(e: Event) {
