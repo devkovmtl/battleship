@@ -3,9 +3,18 @@ import './index.css'
 import VsImg from './images/player-versus-player.png'
 import createPlayer from './Player/player'
 import { Oriention, PlayerType } from './enum'
-import { BOAT, WATER } from './constants'
+import {
+  BATTLESHIP,
+  BOAT,
+  CARRIER,
+  CRUISER,
+  DESTROYER,
+  SUBMARINE,
+  WATER,
+} from './constants'
 import { Player } from './interface'
 import createShip from './Ship/ship'
+import { getRandomInt } from './utils'
 
 const playerOneName = document.querySelector('.player-one-name')
 const playerOneGrid = document.querySelector('.player-one-grid')
@@ -17,21 +26,23 @@ const playerTwoGrid = document.querySelector('.player-two-grid')
 const playerTwoShipContainer = document.querySelector(
   '.player-two-ship-container'
 )
-
 const btnStart = document.querySelector('.btn-start')
 
 let isHorizontal = true
 
 const playerOne = createPlayer('Player One', PlayerType.USER)
 const playerTwo = createPlayer('CPU', PlayerType.COMPUTER)
+const whoseTurn = document.querySelector('#turn')
 
 let draggedShip: HTMLElement
 let draggedShipLength = 0
 let draggedShipName = ''
 let userSquaresList: HTMLDivElement[] = []
 
-let gameStarted = false
-let gameOver = false
+let isGameStarted = false
+let isGameOver = false
+let currentPlayer = 'user'
+let cpuAttack = {}
 
 function insertImageBackground() {
   const imgUIContainer = document.querySelector('.ui-img-container')
@@ -75,7 +86,14 @@ function createGridHTMLELement(grid: any[][], isEnnemyGrid: boolean) {
       if (isEnnemyGrid) {
         cellContainer.classList.add('cpu-cell-container')
       }
-      if (isEnnemyGrid && grid[i][j] === BOAT) {
+      if (
+        (isEnnemyGrid && grid[i][j] === BOAT) ||
+        grid[i][j].split('-')[0] === SUBMARINE ||
+        grid[i][j].split('-')[0] === DESTROYER ||
+        grid[i][j].split('-')[0] === CRUISER ||
+        grid[i][j].split('-')[0] === BATTLESHIP ||
+        grid[i][j].split('-')[0] === CARRIER
+      ) {
         cellContainer.textContent = WATER
       } else {
         cellContainer.textContent = grid[i][j]
@@ -200,38 +218,59 @@ function onDragOver(e: Event) {
   e.preventDefault()
 }
 
-function onBtnStart() {
-  if (playerOneShipContainer && playerOneShipContainer?.childNodes.length > 1) {
-    alert('First Place all your ships in the gameboard')
+function playGame() {
+  if (isGameOver) {
+    console.log('Game Over')
     return
-  } else {
-    if (btnStart) {
-      gameStarted = true
-      gameLoop()
+  }
+
+  if (playerOneShipContainer && playerOneShipContainer?.childNodes.length > 1) {
+    alert('Place all your ships on the gameboard')
+    return
+  }
+
+  isGameStarted = true
+
+  whoseTurn?.classList.toggle('hidden')
+
+  if (currentPlayer === 'user') {
+    // @ts-ignore
+    whoseTurn?.innerHTML = 'Your Go'
+    const cpuCells = document.querySelectorAll('.cpu-cell-container')
+    cpuCells.forEach((cpu) => cpu.addEventListener('click', attackEnemyBoard))
+
+    if (playerTwo.allShipsSunk()) {
+      isGameOver = true
+      console.log('Player One win')
     }
+  }
+
+  if (currentPlayer === 'computer') {
+    console.log('Computer go')
+    // @ts-ignore
+
+    setTimeout(() => {
+      const { row, col } = generateCpuMove()
+      playerTwo.attackEnemyBoard(row, col, playerOne.gameBoard)
+      console.log(row, col)
+    }, 500)
+    console.log(playerOne.gameBoard.grid)
+    // showGrid(
+    //   playerOneGrid,
+    //   createGridHTMLELement(playerOne.gameBoard.grid, false)
+    // )
+    currentPlayer = 'user'
+    if (playerOne.allShipsSunk()) {
+      isGameOver = true
+      console.log('Computer win')
+    }
+    playGame()
   }
 }
 
-function gameLoop() {
-  console.log('Test')
-
-  // while(!gameOver) {
-  //   if(playerOne.allShipsSunk()) {
-  //     gameOver = true
-  // gameStarted = false
-  //     alert('Computer Win!')
-  //   }
-  //   if(playerTwo.allShipsSunk()) {
-  //     gameOver = true
-  // gameStarted = false
-  //     alert('You Win!')
-  //   }
-  // }
-}
-
 function attackEnemyBoard(e: Event) {
-  if (!gameStarted || gameOver) {
-    alert('please place all your ship')
+  if (isGameOver) {
+    console.log('Game is over')
     return
   }
 
@@ -241,6 +280,22 @@ function attackEnemyBoard(e: Event) {
   const col = +e.target.id.split('-')[2]
   playerOne.attackEnemyBoard(row, col, playerTwo.gameBoard)
   console.log(playerTwo.gameBoard.grid)
+  // show cpu grid
+  showGrid(playerTwoGrid, createGridHTMLELement(playerTwo.gameBoard.grid, true))
+  currentPlayer = 'computer'
+  // @ts-expect-error
+  whoseTurn?.innerHTML = ''
+  playGame()
+}
+
+function generateCpuMove() {
+  const row = getRandomInt(9)
+  const col = getRandomInt(9)
+  // @ts-ignore
+  if (cpuAttack[`${row}-${col}`]) {
+    generateCpuMove()
+  }
+  return { row, col }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -257,8 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
     playerOneGrid,
     createGridHTMLELement(playerOne.gameBoard.grid, false)
   )
-  // show cpu grid
-  showGrid(playerTwoGrid, createGridHTMLELement(playerTwo.gameBoard.grid, true))
 
   // add the ships for the player
   for (let i = 0; i < playerOne.ships.length; i++) {
@@ -276,6 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     playerTwo.placeRandomShip(playerTwo.ships[i])
   }
 
+  // show cpu grid
+  showGrid(playerTwoGrid, createGridHTMLELement(playerTwo.gameBoard.grid, true))
+
   console.log(playerTwo.gameBoard.grid)
 
   // rotate the ship vertical or horizontal
@@ -286,11 +342,5 @@ document.addEventListener('DOMContentLoaded', () => {
     gridCell.addEventListener('dragover', onDragOver)
   })
   // btn start
-  btnStart?.addEventListener('click', onBtnStart)
-
-  // grab the cpu cells to be able to click to attack the ships
-  const cpuCells = document.querySelectorAll('.cpu-cell-container')
-  cpuCells.forEach((cpuCell) =>
-    cpuCell.addEventListener('click', attackEnemyBoard)
-  )
+  btnStart?.addEventListener('click', playGame)
 })
