@@ -6,16 +6,21 @@ import ImageVsWhite from './images/player-versus-player-white.png'
 
 const playerOneName = document.querySelector('.player-one-name')
 const playerOneLives = document.querySelector('.player-one-lives')
-const myGameboardGrid = document.querySelector('.gameboard-grid-me')
+const playerOneGridContainer = document.querySelector(
+  '.player-one-grid-container'
+)
 const btnRotate = document.querySelector('.btn-rotate')
 const myGrid = document.querySelector('.player-one-ships')
 
 const whoseTurn = document.querySelector('.player-turn')
 const btnStart = document.querySelector('.btn-start')
+const btnReset = document.querySelector('.btn-reset')
 
 const playerTwoName = document.querySelector('.player-two-name')
 const playerTwoLives = document.querySelector('.player-two-lives')
-const enemyGameboardGrid = document.querySelector('.gameboard-grid-enemy')
+const enemyGridContainer = document.querySelector('.player-two-grid-container')
+
+let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
 
 // Number of cell per row
 const CELL_PER_ROW = 10
@@ -27,9 +32,71 @@ document.addEventListener('DOMContentLoaded', () => {
   loadImage()
   // @ts-ignore
   whoseTurn?.textContent = 'Loading...'
+
+  myHtmlGridEl = createHtmlGrid(NBR_ROW, CELL_PER_ROW, false)
+  playerOneGridContainer?.appendChild(myHtmlGridEl)
+
+  enemyHtmlGridEl = createHtmlGrid(NBR_ROW, CELL_PER_ROW, true)
+  enemyGridContainer?.appendChild(enemyHtmlGridEl)
+
+  // Rotate the ship
+  btnRotate?.addEventListener('click', rotateShip)
+  btnStart?.addEventListener('click', startGame)
+  btnReset?.addEventListener('click', resetGame)
 })
 
-function createHtmlGrid(isEnemygrid: boolean): HTMLElement {
+function resetGame() {
+  location.reload()
+}
+
+function startGame() {
+  console.log('Start Game')
+}
+
+function rotateShip() {
+  console.log('Rotate Ship')
+}
+
+function createHtmlShipContainer(
+  name: string,
+  length: number,
+  isEnemy: boolean
+): HTMLElement {
+  const shipContainer = document.createElement('div')
+  shipContainer.classList.add(
+    'ship-container',
+    `${name}-container`,
+    isEnemy ? `my-ship-container` : `enemy-ship-container`,
+    'flex',
+    'flex-row'
+  )
+  return shipContainer
+}
+
+function createHtmlShipCell(
+  name: string,
+  cellNum: number,
+  isEnemy: boolean
+): HTMLElement {
+  const shipCell = document.createElement('div')
+  shipCell.id = `${name}-${cellNum}`
+  shipCell.classList.add(
+    'ship-cell',
+    `ship-${name}-cell`,
+    isEnemy ? 'my-ship-cell' : 'enemy-ship-cell',
+    'bg-gray-500',
+    'w-6',
+    'h-6'
+  )
+
+  return shipCell
+}
+
+function createHtmlGrid(
+  maxRow: number,
+  maxCell: number,
+  isEnemygrid: boolean
+): HTMLElement {
   const grid = document.createElement('grid')
   grid.classList.add(
     'gameboard',
@@ -41,9 +108,9 @@ function createHtmlGrid(isEnemygrid: boolean): HTMLElement {
     'space-y-1'
   )
 
-  for (let nbrRow = 0; nbrRow < NBR_ROW; nbrRow++) {
+  for (let nbrRow = 0; nbrRow < maxRow; nbrRow++) {
     const r = createHtmlRow(nbrRow, isEnemygrid)
-    for (let nbrCell = 0; nbrCell < CELL_PER_ROW; nbrCell++) {
+    for (let nbrCell = 0; nbrCell < maxCell; nbrCell++) {
       const c = createHtmlGridCell(nbrRow, nbrCell, isEnemygrid)
       r.appendChild(c)
     }

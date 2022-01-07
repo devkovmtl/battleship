@@ -15,7 +15,8 @@ body {
 }
 
 .btn-start:hover,
-.btn-rotate:hover {
+.btn-rotate:hover,
+.btn-reset:hover {
   cursor: pointer;
 }
 
