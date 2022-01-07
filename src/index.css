@@ -50,3 +50,12 @@ body {
 .grid-cell-enemy:hover {
   cursor: crosshair;
 }
+
+.ships-container {
+}
+
+.player-one-ships-container {
+}
+
+.player-two-ships-container {
+}

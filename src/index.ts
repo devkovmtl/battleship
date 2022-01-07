@@ -3,6 +3,7 @@ import './index.css'
 import ImageVsBlack from './images/player-versus-player.png'
 // @ts-ignore
 import ImageVsWhite from './images/player-versus-player-white.png'
+import { Oriention } from './enum'
 
 const playerOneName = document.querySelector('.player-one-name')
 const playerOneLives = document.querySelector('.player-one-lives')
@@ -10,7 +11,9 @@ const playerOneGridContainer = document.querySelector(
   '.player-one-grid-container'
 )
 const btnRotate = document.querySelector('.btn-rotate')
-const myGrid = document.querySelector('.player-one-ships')
+const playerOneShipsContainer = document.querySelector(
+  '.player-one-ships-container'
+)
 
 const whoseTurn = document.querySelector('.player-turn')
 const btnStart = document.querySelector('.btn-start')
@@ -19,13 +22,18 @@ const btnReset = document.querySelector('.btn-reset')
 const playerTwoName = document.querySelector('.player-two-name')
 const playerTwoLives = document.querySelector('.player-two-lives')
 const enemyGridContainer = document.querySelector('.player-two-grid-container')
-
-let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
+const playerTwoShipsContainer = document.querySelector(
+  '.player-two-ships-container'
+)
 
 // Number of cell per row
 const CELL_PER_ROW = 10
 // Number of row
 const NBR_ROW = 10
+
+let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
+// Orientation of ship
+let isHorizontal = true
 
 document.addEventListener('DOMContentLoaded', () => {
   // Load image
@@ -54,7 +62,24 @@ function startGame() {
 }
 
 function rotateShip() {
-  console.log('Rotate Ship')
+  if (isHorizontal) {
+    playerOneShipsContainer?.classList.remove('flex-col', 'justify-between')
+    playerOneShipsContainer?.classList.add(
+      'flex-row',
+      'items-start',
+      'space-x-3'
+    )
+  }
+
+  if (!isHorizontal) {
+    playerOneShipsContainer?.classList.remove(
+      'flex-row',
+      'items-start',
+      'space-x-3'
+    )
+    playerOneShipsContainer?.classList.add('flex-col', 'justify-between')
+  }
+  isHorizontal = !isHorizontal
 }
 
 function createHtmlShipContainer(
