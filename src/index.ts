@@ -30,6 +30,23 @@ const playerTwoShipsContainer = document.querySelector(
 const CELL_PER_ROW = 10
 // Number of row
 const NBR_ROW = 10
+// Number of Ships
+const NBR_SHIPS = 5
+// ships name
+const SHIPS_NAME = [
+  'submarine',
+  'destroyer',
+  'cruiser',
+  'battleship',
+  'carrier',
+]
+const BG_SHIP = [
+  'bg-green-300',
+  'bg-yellow-300',
+  'bg-pink-300',
+  'bg-purple-300',
+  'bg-red-300',
+]
 
 let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
 // Orientation of ship
@@ -41,11 +58,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // @ts-ignore
   whoseTurn?.textContent = 'Loading...'
 
+  // Build Player One grid
   myHtmlGridEl = createHtmlGrid(NBR_ROW, CELL_PER_ROW, false)
   playerOneGridContainer?.appendChild(myHtmlGridEl)
-
+  // Build Player Two grid
   enemyHtmlGridEl = createHtmlGrid(NBR_ROW, CELL_PER_ROW, true)
   enemyGridContainer?.appendChild(enemyHtmlGridEl)
+
+  // insert ships to player one container
+  for (let i = 0; i < NBR_SHIPS; i++) {
+    const ship = createHtmlShip(SHIPS_NAME[i], i + 1, false)
+    ship.classList.add(BG_SHIP[i])
+    playerOneShipsContainer?.appendChild(ship)
+  }
+  // insert ships to player two container
+  for (let i = 0; i < NBR_SHIPS; i++) {
+    const ship = createHtmlShip(SHIPS_NAME[i], i + 1, true)
+    ship.classList.add(BG_SHIP[i])
+    playerTwoShipsContainer?.appendChild(ship)
+  }
 
   // Rotate the ship
   btnRotate?.addEventListener('click', rotateShip)
@@ -62,24 +93,43 @@ function startGame() {
 }
 
 function rotateShip() {
+  const playerOnShips = document.querySelectorAll('.my-ship-container')
   if (isHorizontal) {
+    // ship horizontal
     playerOneShipsContainer?.classList.remove('flex-col', 'justify-between')
     playerOneShipsContainer?.classList.add(
       'flex-row',
       'items-start',
       'space-x-3'
     )
+    playerOnShips.forEach((ship) => ship.classList.add('flex-col'))
   }
 
   if (!isHorizontal) {
+    // ship vertical
     playerOneShipsContainer?.classList.remove(
       'flex-row',
       'items-start',
       'space-x-3'
     )
     playerOneShipsContainer?.classList.add('flex-col', 'justify-between')
+    playerOnShips.forEach((ship) => ship.classList.remove('flex-col'))
   }
   isHorizontal = !isHorizontal
+}
+
+function createHtmlShip(
+  name: string,
+  length: number,
+  isEnemy: boolean
+): HTMLElement {
+  const shipContainer = createHtmlShipContainer(name, length, isEnemy)
+  // add the to player one ships container
+  for (let i = 0; i < length; i++) {
+    const shipCell = createHtmlShipCell(name, i, isEnemy)
+    shipContainer.appendChild(shipCell)
+  }
+  return shipContainer
 }
 
 function createHtmlShipContainer(
@@ -91,10 +141,17 @@ function createHtmlShipContainer(
   shipContainer.classList.add(
     'ship-container',
     `${name}-container`,
-    isEnemy ? `my-ship-container` : `enemy-ship-container`,
+    isEnemy ? `enemy-ship-container` : `my-ship-container`,
     'flex',
-    'flex-row'
+    'flex-row',
+    'rounded-md',
+    'max-w-min'
   )
+
+  if (!isEnemy) {
+    shipContainer.setAttribute('draggable', 'true')
+  }
+
   return shipContainer
 }
 
@@ -108,8 +165,7 @@ function createHtmlShipCell(
   shipCell.classList.add(
     'ship-cell',
     `ship-${name}-cell`,
-    isEnemy ? 'my-ship-cell' : 'enemy-ship-cell',
-    'bg-gray-500',
+    isEnemy ? 'enemy-ship-cell' : 'my-ship-cell',
     'w-6',
     'h-6'
   )
@@ -129,8 +185,7 @@ function createHtmlGrid(
     isEnemygrid ? 'gameboard-grid-enemy' : 'gameboard-grid-me',
     'flex',
     'flex-col',
-    'bg-indigo-800',
-    'space-y-1'
+    'bg-indigo-700'
   )
 
   for (let nbrRow = 0; nbrRow < maxRow; nbrRow++) {
@@ -152,8 +207,7 @@ function createHtmlRow(rowNumber: number, isEnemyRow: boolean): HTMLElement {
     'grid-row',
     isEnemyRow ? 'grid-row-enemy' : 'grid-row-me',
     'flex',
-    'flex-row',
-    'space-x-1'
+    'flex-row'
   )
 
   return row
@@ -173,6 +227,7 @@ function createHtmlGridCell(
     'w-6',
     'h-6',
     'bg-blue-200',
+    'rounded-md',
     'hover:bg-blue-400',
     'hover:cursor-pointer'
   )
