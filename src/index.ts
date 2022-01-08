@@ -51,6 +51,10 @@ const BG_SHIP = [
 let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
 // Orientation of ship
 let isHorizontal = true
+// Ship Grab to be dragged by player
+let draggedShip = null
+let draggedShipName = ''
+let draggedShipLength = 0
 
 document.addEventListener('DOMContentLoaded', () => {
   // Load image
@@ -82,14 +86,28 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRotate?.addEventListener('click', rotateShip)
   btnStart?.addEventListener('click', startGame)
   btnReset?.addEventListener('click', resetGame)
+  // Event listener to drag the ship9
+  document
+    .querySelectorAll('.my-ship-container')
+    .forEach((ship) => ship.addEventListener('dragstart', onShipDragStart))
 })
+
+function startGame() {
+  console.log('Start Game')
+}
 
 function resetGame() {
   location.reload()
 }
 
-function startGame() {
-  console.log('Start Game')
+function onShipDragStart(e: any) {
+  //@ts-ignore
+  draggedShip = this
+  console.log(draggedShip)
+  //@ts-ignore
+  draggedShipName = this.classlist
+  // draggedShipLength = draggedShip.childnodes.length
+  console.log(draggedShipName)
 }
 
 function rotateShip() {
