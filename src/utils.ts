@@ -1,4 +1,7 @@
-const createAnArray = function (length: number, element?: string): Array<any> {
+const createArrayOfString = function (
+  length: number,
+  element?: string
+): Array<any> {
   if (!length || typeof length !== 'number') {
     throw new Error('Length is required and must be a number')
   }
@@ -9,7 +12,7 @@ const createAnArray = function (length: number, element?: string): Array<any> {
   let a = []
   for (let i = 0; i < length; i++) {
     if (element) {
-      a.push(element)
+      a.push(`${element}-${i}`)
     } else {
       a.push(undefined)
     }
@@ -46,8 +49,4 @@ const createArrayOfArray = (
   return grid
 }
 
-const getRandomInt = (max: number) => {
-  return Math.floor(Math.random() * Math.floor(max))
-}
-
-export { createAnArray, createArrayOfArray, getRandomInt }
+export { createArrayOfString, createArrayOfArray }

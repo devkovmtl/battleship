@@ -1,6 +1,6 @@
 import { Ship } from '../interface'
-import { createAnArray } from '../utils'
-import { BOAT, HIT } from '../constants'
+import { createArrayOfString } from '../utils'
+
 // Factory function creating ship
 function createShip(name: string, length: number): Ship {
   if (!name || !name.trim().length) {
@@ -13,18 +13,17 @@ function createShip(name: string, length: number): Ship {
   const ship = {
     name,
     length,
-    body: createAnArray(length, BOAT),
+    body: createArrayOfString(length, name.toLocaleLowerCase()),
     hit: function (position: number) {
       if (position < 0 || position > this.body.length - 1) {
         throw new Error(`Enter a position between 0 and ${this.body.length}`)
       }
-      this.body[position] = HIT
+      this.body[position] = 'HIT'
 
       return true
     },
     isSunk: function () {
-      // console.log(this)
-      return this.body.every((el) => el === HIT)
+      return this.body.every((el) => el === 'HIT')
     },
   }
 

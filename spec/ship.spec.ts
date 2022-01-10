@@ -1,4 +1,3 @@
-import { BOAT, HIT } from '../src/constants'
 import createShip from '../src/Ship/ship'
 
 describe('test creation of ship', () => {
@@ -16,7 +15,7 @@ describe('test creation of ship', () => {
     expect(carrier).not.toBeNull()
     expect(carrier.name).toBe('Carrier')
     expect(carrier.length).toBe(5)
-    expect(carrier.body[1]).toEqual(BOAT)
+    expect(carrier.body[1]).toEqual('carrier-1')
   })
 
   it('should throw if position to hit bigger than length of body', () => {
@@ -27,22 +26,24 @@ describe('test creation of ship', () => {
 
   it('should hit the ship and mark hit at the right position', () => {
     const carrier = createShip('Carrier', 5)
-    expect(carrier.body[1]).toEqual(BOAT)
+    expect(carrier.body[1]).toEqual('carrier-1')
     expect(carrier.hit(1)).toBeTruthy()
-    expect(carrier.body[0]).toEqual(BOAT)
-    expect(carrier.body[2]).toEqual(BOAT)
+    expect(carrier.body[0]).toEqual('carrier-0')
+    expect(carrier.body[2]).toEqual('carrier-2')
     expect(carrier.hit(2)).toBeTruthy()
+    expect(carrier.body[1]).toEqual('HIT')
+    expect(carrier.body[2]).toEqual('HIT')
   })
 
   it('should not sunk the ship the body is not all hit', () => {
     const carrier = createShip('Carrier', 5)
-    expect(carrier.body[1]).toEqual(BOAT)
+    expect(carrier.body[1]).toEqual('carrier-1')
     expect(carrier.hit(1)).toBeTruthy()
-    expect(carrier.body[0]).toEqual(BOAT)
-    expect(carrier.body[2]).toEqual(BOAT)
+    expect(carrier.body[0]).toEqual('carrier-0')
+    expect(carrier.body[2]).toEqual('carrier-2')
     expect(carrier.hit(2)).toBeTruthy()
-    // console.log(carrier.body)
-
+    expect(carrier.body[1]).toEqual('HIT')
+    expect(carrier.body[2]).toEqual('HIT')
     expect(carrier.isSunk()).toBeFalsy()
   })
 
@@ -50,7 +51,6 @@ describe('test creation of ship', () => {
     const destroyer = createShip('Destroyer', 2)
     expect(destroyer.hit(0)).toBeTruthy()
     expect(destroyer.hit(1)).toBeTruthy()
-    // console.log(destroyer.body)
     expect(destroyer.isSunk()).toBeTruthy()
   })
 })
