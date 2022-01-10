@@ -123,4 +123,22 @@ describe('test gameboard place ship on the grid', () => {
   })
 })
 
-describe('test gameboard can receive attack', () => {})
+describe('test gameboard can receive attack', () => {
+  it('should throw if we provide a row less than 0', () => {
+    const gameBoard = createGameboard()
+    const destroyer = createShip('destroyer', 2)
+    gameBoard.placeShipOnGrid(0, 0, destroyer, true)
+    expect(() => {
+      gameBoard.receiveAttack(-1, 4)
+    }).toThrow()
+  })
+
+  it('should throw if we provide a col bigger than grid size', () => {
+    const gameBoard = createGameboard()
+    const destroyer = createShip('destroyer', 2)
+    gameBoard.placeShipOnGrid(0, 0, destroyer, true)
+    expect(() => {
+      gameBoard.receiveAttack(0, 10)
+    }).toThrow()
+  })
+})

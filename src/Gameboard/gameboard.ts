@@ -94,6 +94,15 @@ function createGameboard(row: number = 10, col: number = 10) {
         return false
       }
     },
+    receiveAttack: function (row: number, col: number) {
+      if (row < 0 || row > grid.length - 1) {
+        throw new Error('Please provide a valid number to attack opponent ship')
+      }
+
+      if (col < 0 || col > grid.length - 1) {
+        throw new Error('Please provide a valid number to attack opponent ship')
+      }
+    },
     doesAllShipsHaveSunk: function () {
       return ships.every((sh) => sh.isSunk())
     },
