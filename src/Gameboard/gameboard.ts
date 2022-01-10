@@ -82,12 +82,14 @@ function createGameboard(row: number = 10, col: number = 10) {
           for (let i = 0; i < ship.length; i++) {
             grid[row][col + i] = `${ship.name}-${i}`
           }
+          ships.push(ship)
           return true
         }
         if (!isHorizontal) {
           for (let i = 0; i < ship.length; i++) {
             grid[row + i][col] = `${ship.name}-${i}`
           }
+          ships.push(ship)
           return true
         }
       } else {
@@ -101,6 +103,28 @@ function createGameboard(row: number = 10, col: number = 10) {
 
       if (col < 0 || col > grid.length - 1) {
         throw new Error('Please provide a valid number to attack opponent ship')
+      }
+      if (grid[row][col] === undefined) {
+        grid[row][col] = 'MISS'
+        return false
+      } else {
+        if (grid[row][col] === 'MISS' || grid[row][col] === 'HIT') {
+          return false
+        } else {
+          // send the hit function to correct ship
+          const shipWithIndex = grid[row][col]
+          const shipName = shipWithIndex.split('-')[0]
+          const shipHitPosition = +shipWithIndex.split('-')[1]
+          const ship = ships.find((s) => s.name == shipName)
+
+          if (ship) {
+            ship.hit(shipHitPosition)
+            grid[row][col] = 'HIT'
+            return true
+          }
+
+          return false
+        }
       }
     },
     doesAllShipsHaveSunk: function () {

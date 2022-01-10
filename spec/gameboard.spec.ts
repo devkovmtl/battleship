@@ -141,4 +141,52 @@ describe('test gameboard can receive attack', () => {
       gameBoard.receiveAttack(0, 10)
     }).toThrow()
   })
+
+  it('should return false and mark position if we miss', () => {
+    const gameBoard = createGameboard(3, 3)
+    const submarine = createShip('submarine', 1)
+    gameBoard.placeShipOnGrid(0, 0, submarine, true)
+    let didTouch = gameBoard.receiveAttack(0, 1)
+    expect(didTouch).toBeFalsy()
+    expect(gameBoard.grid[0][1]).toEqual('MISS')
+  })
+
+  it('should return true and mark position if we hit', () => {
+    const gameBoard = createGameboard(3, 3)
+    const submarine = createShip('submarine', 1)
+    gameBoard.placeShipOnGrid(0, 0, submarine, true)
+    let didTouch = gameBoard.receiveAttack(0, 0)
+    expect(didTouch).toBeTruthy()
+    expect(gameBoard.grid[0][0]).toEqual('HIT')
+  })
+
+  it('should return true and mark position if we hit and called hit function', () => {
+    const gameBoard = createGameboard(3, 3)
+    const submarine = createShip('submarine', 1)
+    gameBoard.placeShipOnGrid(0, 0, submarine, true)
+    let didTouch = gameBoard.receiveAttack(0, 0)
+    expect(didTouch).toBeTruthy()
+    expect(gameBoard.grid[0][0]).toEqual('HIT')
+    expect(submarine.body[0]).toEqual('HIT')
+  })
+})
+
+describe('test gameboard check if every ship have sunked', () => {
+  it('should return true every ship have sunk', () => {
+    const gameBoard = createGameboard(3, 3)
+    const submarine = createShip('submarine', 1)
+    gameBoard.placeShipOnGrid(0, 0, submarine, true)
+    gameBoard.receiveAttack(0, 0)
+    expect(gameBoard.doesAllShipsHaveSunk()).toBeTruthy()
+  })
+
+  it('should return false there are ship on grid', () => {
+    const gameBoard = createGameboard(3, 3)
+    const submarine = createShip('submarine', 1)
+    const destroyer = createShip('destroyer', 2)
+    gameBoard.placeShipOnGrid(0, 0, submarine, true)
+    gameBoard.placeShipOnGrid(0, 2, destroyer, false)
+    gameBoard.receiveAttack(0, 0)
+    expect(gameBoard.doesAllShipsHaveSunk()).toBeFalsy()
+  })
 })
