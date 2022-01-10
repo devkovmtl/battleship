@@ -54,6 +54,8 @@ let isHorizontal = true
 let draggedShip: HTMLElement
 let draggedShipName = ''
 let draggedShipLength = 0
+// Store the Cpu ship location
+const cpuShipLocation = {}
 
 document.addEventListener('DOMContentLoaded', () => {
   // Load image
@@ -103,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 function startGame() {
+  console.log(cpuShipLocation)
   if (playerOneShipsContainer?.childNodes.length !== 0) {
     alert('Please place all your ships.')
     return
@@ -118,13 +121,27 @@ function generateRandomNum(max: number): number {
   return Math.floor(Math.random() * max)
 }
 
+function generateCpuLocation(max: number) {
+  const row = generateRandomNum(max)
+  const col = generateRandomNum(max)
+  // @ts-ignore
+  if (cpuShipLocation[`${row}-${col}`]) {
+    generateCpuLocation(max)
+  }
+
+  return { row, col }
+}
+
 function placeCpuShip(ship: any) {
-  const row = generateRandomNum(CELL_PER_ROW)
-  const col = generateRandomNum(NBR_ROW)
+  // const row = generateRandomNum(CELL_PER_ROW)
+  // const col = generateRandomNum(NBR_ROW)
+  const { row, col } = generateCpuLocation(CELL_PER_ROW)
   const shipLength = ship.childNodes.length
   const shipName = ship.classList[1].split('-')[0]
   const isHorizontal = generateRandomNum(2) === 0 ? true : false
+
   const listOfCells = []
+
   if (isHorizontal) {
     for (let i = 0; i < shipLength; i++) {
       const cell = document.querySelector(
@@ -148,14 +165,17 @@ function placeCpuShip(ship: any) {
         const cell = document.querySelector(
           `#cell-${row}-${col + i}.grid-cell-enemy`
         )
-        cell?.classList.remove(
-          'bg-blue-200',
-          'rounded-md',
-          'hover:bg-blue-400',
-          'hover:cursor-pointer'
-        )
-        cell?.classList.add(`${shipName}-${i}`, ship.classList[7], 'taken')
+        // cell?.classList.remove(
+        //   'bg-blue-200',
+        //   'rounded-md',
+        //   'hover:bg-blue-400',
+        //   'hover:cursor-pointer'
+        // )
+        // cell?.classList.add(`${shipName}-${i}`, ship.classList[7], 'taken')
+        // @ts-ignore
+        cpuShipLocation[`${row}-${col + i}`] = `${shipName}-${i}`
       }
+
       playerTwoShipsContainer?.removeChild(ship)
     } else {
       placeCpuShip(ship)
@@ -182,16 +202,19 @@ function placeCpuShip(ship: any) {
       // console.log(cell)
       for (let i = 0; i < shipLength; i++) {
         const cell = document.querySelector(
-          `#cell-${row + 1}-${col}.grid-cell-enemy`
+          `#cell-${row + i}-${col}.grid-cell-enemy`
         )
-        cell?.classList.remove(
-          'bg-blue-200',
-          'rounded-md',
-          'hover:bg-blue-400',
-          'hover:cursor-pointer'
-        )
-        cell?.classList.add(`${shipName}-${i}`, ship.classList[7], 'taken')
+        // cell?.classList.remove(
+        //   'bg-blue-200',
+        //   'rounded-md',
+        //   'hover:bg-blue-400',
+        //   'hover:cursor-pointer'
+        // )
+        // cell?.classList.add(`${shipName}-${i}`, ship.classList[7], 'taken')
+        // @ts-ignore
+        cpuShipLocation[`${row + i}-${col}`] = `${shipName}-${i}`
       }
+
       playerTwoShipsContainer?.removeChild(ship)
     } else {
       placeCpuShip(ship)
