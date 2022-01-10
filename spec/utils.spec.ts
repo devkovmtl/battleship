@@ -1,4 +1,4 @@
-import { createAnArray, createArrayOfArray, getRandomInt } from '../src/utils'
+import { createArrayOfString, createArrayOfArray } from '../src/utils'
 
 describe('test create an array', () => {
   it('should throw an error if no args passed', () => {
@@ -17,15 +17,15 @@ describe('test create an array', () => {
   })
 
   it('should create an array with right length with undefined', () => {
-    const array = createAnArray(3)
+    const array = createArrayOfString(3)
     expect(array.length).toBe(3)
     expect(array[1]).toBe(undefined)
   })
 
   it('should create an array with length 3 with element "bob"', () => {
-    const array = createAnArray(3, 'bob')
+    const array = createArrayOfString(3, 'bob')
     expect(array.length).toBe(3)
-    expect(array[1]).toBe('bob')
+    expect(array[1]).toBe('bob-1')
   })
 })
 
@@ -75,10 +75,10 @@ describe('test create an array of array', () => {
   })
 })
 
-describe('test return number from random function', () => {
-  it('should return a number between max', () => {
-    expect(typeof getRandomInt(2) === 'number').toBeTruthy()
-    expect(getRandomInt(2)).not.toBeNull()
-    expect(getRandomInt(2)).toBeLessThanOrEqual(2)
-  })
-})
+// describe('test return number from random function', () => {
+//   it('should return a number between max', () => {
+//     expect(typeof getRandomInt(2) === 'number').toBeTruthy()
+//     expect(getRandomInt(2)).not.toBeNull()
+//     expect(getRandomInt(2)).toBeLessThanOrEqual(2)
+//   })
+// })
