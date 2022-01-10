@@ -1,125 +1,101 @@
-import {
-  BATTLESHIP,
-  BOAT,
-  CARRIER,
-  CRUISER,
-  DESTROYER,
-  HIT,
-  MISS,
-  SUBMARINE,
-  WATER,
-} from '../constants'
-import { Ship, Gameboard } from '../interface'
+import { Ship } from '../interface'
 import { createArrayOfArray } from '../utils'
-import { Oriention } from '../enum'
 
-function createGameboard(row: number = 10, col: number = 10): Gameboard {
+function createGameboard(row: number = 10, col: number = 10) {
   if (row <= 0) {
     row = 10
   }
   if (col <= 0) {
     col = 10
   }
-  let grid = createArrayOfArray(row, col, WATER)
+
+  let grid = createArrayOfArray(row, col)
   let ships: Ship[] = []
+
+  function canShipBePlaced(
+    row: number,
+    col: number,
+    shipLength: number,
+    isHorizontal: boolean
+  ): boolean {
+    // grab next cell to check if empty
+    let nextCellsGrid = []
+    if (row < 0) {
+      return false
+    }
+    if (col < 0) {
+      return false
+    }
+    if (row > grid.length - 1) {
+      return false
+    }
+    if (col > grid[0].length - 1) {
+      return false
+    }
+    if (!shipLength || shipLength <= 0) {
+      return false
+    }
+    if (isHorizontal) {
+      if (col + (shipLength - 1) > grid.length - 1) {
+        return false
+      }
+      // grab the next cell to see if empty
+      for (let i = 0; i < shipLength; i++) {
+        nextCellsGrid.push(grid[row][col + i])
+      }
+    }
+    if (!isHorizontal) {
+      if (row + (shipLength - 1) > grid[0].length - 1) {
+        return false
+      }
+      // grab the next cell to see if empty
+      for (let i = 0; i < shipLength; i++) {
+        nextCellsGrid.push(grid[row + i][col])
+      }
+    }
+
+    if (!nextCellsGrid.every((nxtCell) => !nxtCell)) {
+      return false
+    } else {
+      return true
+    }
+  }
 
   return {
     grid,
-    ships,
-    placeCharacter(
+    placeShipOnGrid: function (
       row: number,
       col: number,
       ship: Ship,
-      orientation: Oriention = Oriention.Horizontal
+      isHorizontal: boolean = true
     ) {
-      // console.log(this)
-      if (row > this.grid.length - 1 || col > this.grid[0].length - 1) {
-        throw new Error(
-          `Please insert a location between ${this.grid.length - 1} * ${
-            this.grid[0].length - 1
-          }`
-        )
-      }
-      if (!ship) {
-        throw new Error(`Ship is required`)
+      if (row < 0 || row > grid.length - 1) {
+        throw new Error('Please provide a valid number to place your ship')
       }
 
-      let canAddShip = true
+      if (col < 0 || col > grid.length - 1) {
+        throw new Error('Please provide a valid number to place your ship')
+      }
 
-      // check if we can add a ship to the location provided
-      for (let i = 0; i < ship.length; i++) {
-        if (orientation === Oriention.Horizontal) {
-          // check if we overflow horizontaly
-          if (col + i > this.grid[0].length - 1) {
-            canAddShip = false
-            return
+      if (canShipBePlaced(row, col, ship.length, isHorizontal)) {
+        if (isHorizontal) {
+          for (let i = 0; i < ship.length; i++) {
+            grid[row][col + i] = `${ship.name}-${i}`
           }
-
-          // check if already ship or anything else than default water we can add
-          if (this.grid[row][col + i] !== WATER) {
-            canAddShip = false
-          }
+          return true
         }
-        // check if we overflow vertical
-        if (orientation === Oriention.Vertical) {
-          if (row + i > this.grid.length - 1) {
-            canAddShip = false
-            return
+        if (!isHorizontal) {
+          for (let i = 0; i < ship.length; i++) {
+            grid[row + i][col] = `${ship.name}-${i}`
           }
-          if (this.grid[row + i][col] !== WATER) {
-            canAddShip = false
-          }
+          return true
         }
-      }
-
-      // add the ship
-      if (canAddShip) {
-        for (let i = 0; i < ship.length; i++) {
-          if (orientation === Oriention.Horizontal) {
-            // WE PLACE A SHIP HORIZONTAL POSITION
-            // console.log('INSERT BOAT')
-            this.grid[row][col + i] = `${ship.name}-${i}`
-            // player Location
-          }
-          if (orientation === Oriention.Vertical) {
-            this.grid[row + i][col] = `${ship.name}-${i}`
-            // WE PLACE A SHIP VERTICAL POSITION
-            // player location
-          }
-        }
-        ships.push(ship)
-      }
-    },
-    receiveAttack(row: number, col: number) {
-      // console.log('RECEIVE ATK:', this.grid[row][col])
-      if (
-        this.grid[row][col].split('-')[0] === SUBMARINE ||
-        this.grid[row][col].split('-')[0] === DESTROYER ||
-        this.grid[row][col].split('-')[0] === CRUISER ||
-        this.grid[row][col].split('-')[0] === BATTLESHIP ||
-        this.grid[row][col].split('-')[0] === CARRIER
-      ) {
-        // console.log(ships)
-        const s = ships.find(
-          (s) => s.name === this.grid[row][col].split('-')[0]
-        )
-        s?.hit(+this.grid[row][col].split('-')[1])
-        this.grid[row][col] = HIT
-        return true
-      } else if (this.grid[row][col] === WATER) {
-        this.grid[row][col] = MISS
-        return false
       } else {
         return false
       }
     },
-    allShipsSunk(): boolean {
-      let a = []
-      for (let index = 0; index < ships.length; index++) {
-        const ship = ships[index]
-        a.push(ship.isSunk())
-      }
-      return a.every((e) => e === true)
+    doesAllShipsHaveSunk: function () {
+      return ships.every((sh) => sh.isSunk())
     },
   }
 }

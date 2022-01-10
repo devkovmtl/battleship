@@ -2,7 +2,7 @@ import { HIT, WATER } from '../src/constants'
 import { Oriention, PlayerType } from '../src/enum'
 import createPlayer from '../src/Player/player'
 
-describe('should test the player', () => {
+describe.skip('should test the player', () => {
   it('should create the player', () => {
     const p1 = createPlayer('Player 1', PlayerType.USER)
     const p2 = createPlayer('Player 2', PlayerType.COMPUTER)
