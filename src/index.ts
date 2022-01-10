@@ -3,7 +3,6 @@ import './index.css'
 import ImageVsBlack from './images/player-versus-player.png'
 // @ts-ignore
 import ImageVsWhite from './images/player-versus-player-white.png'
-import { Oriention } from './enum'
 
 const playerOneName = document.querySelector('.player-one-name')
 const playerOneLives = document.querySelector('.player-one-lives')
@@ -52,7 +51,7 @@ let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
 // Orientation of ship
 let isHorizontal = true
 // Ship Grab to be dragged by player
-let draggedShip = null
+let draggedShip: HTMLElement
 let draggedShipName = ''
 let draggedShipLength = 0
 
@@ -86,28 +85,240 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRotate?.addEventListener('click', rotateShip)
   btnStart?.addEventListener('click', startGame)
   btnReset?.addEventListener('click', resetGame)
-  // Event listener to drag the ship9
+  // Event listener to drag the ship
   document
     .querySelectorAll('.my-ship-container')
     .forEach((ship) => ship.addEventListener('dragstart', onShipDragStart))
+  // Event listener on player one to allow drop ship
+  document.querySelectorAll('.grid-cell-me').forEach((gridCell) => {
+    gridCell.addEventListener('drop', onShipDragDrop)
+    gridCell.addEventListener('dragover', onShipDragOver)
+  })
+
+  // place Cpu ship
+
+  document.querySelectorAll('.enemy-ship-container').forEach((ship) => {
+    setTimeout(() => placeCpuShip(ship), 1000)
+  })
 })
 
 function startGame() {
-  console.log('Start Game')
+  if (playerOneShipsContainer?.childNodes.length !== 0) {
+    alert('Please place all your ships.')
+    return
+  }
+  console.log('start')
 }
 
 function resetGame() {
   location.reload()
 }
 
+function generateRandomNum(max: number): number {
+  return Math.floor(Math.random() * max)
+}
+
+function placeCpuShip(ship: any) {
+  const row = generateRandomNum(CELL_PER_ROW)
+  const col = generateRandomNum(NBR_ROW)
+  const shipLength = ship.childNodes.length
+  const shipName = ship.classList[1].split('-')[0]
+  const isHorizontal = generateRandomNum(2) === 0 ? true : false
+  const listOfCells = []
+  if (isHorizontal) {
+    for (let i = 0; i < shipLength; i++) {
+      const cell = document.querySelector(
+        `#cell-${row}-${col + i}.grid-cell-enemy`
+      )
+      listOfCells.push(cell)
+    }
+
+    if (
+      checkIfShipCanBePlaced(
+        isHorizontal,
+        col,
+        row,
+        shipLength,
+        CELL_PER_ROW,
+        listOfCells
+      )
+    ) {
+      // console.log(cell)
+      for (let i = 0; i < shipLength; i++) {
+        const cell = document.querySelector(
+          `#cell-${row}-${col + i}.grid-cell-enemy`
+        )
+        cell?.classList.remove(
+          'bg-blue-200',
+          'rounded-md',
+          'hover:bg-blue-400',
+          'hover:cursor-pointer'
+        )
+        cell?.classList.add(`${shipName}-${i}`, ship.classList[7], 'taken')
+      }
+      playerTwoShipsContainer?.removeChild(ship)
+    } else {
+      placeCpuShip(ship)
+    }
+  }
+  if (!isHorizontal) {
+    for (let i = 0; i < shipLength; i++) {
+      const cell = document.querySelector(
+        `#cell-${row + i}-${col}.grid-cell-enemy`
+      )
+      listOfCells.push(cell)
+    }
+
+    if (
+      checkIfShipCanBePlaced(
+        isHorizontal,
+        col,
+        row,
+        shipLength,
+        CELL_PER_ROW,
+        listOfCells
+      )
+    ) {
+      // console.log(cell)
+      for (let i = 0; i < shipLength; i++) {
+        const cell = document.querySelector(
+          `#cell-${row + 1}-${col}.grid-cell-enemy`
+        )
+        cell?.classList.remove(
+          'bg-blue-200',
+          'rounded-md',
+          'hover:bg-blue-400',
+          'hover:cursor-pointer'
+        )
+        cell?.classList.add(`${shipName}-${i}`, ship.classList[7], 'taken')
+      }
+      playerTwoShipsContainer?.removeChild(ship)
+    } else {
+      placeCpuShip(ship)
+    }
+  }
+}
+
+function checkIfShipCanBePlaced(
+  isHorizontal: boolean,
+  col: number,
+  row: number,
+  shipLength: number,
+  maxGridSize: number,
+  listOfCells: any[]
+): boolean {
+  if (listOfCells) {
+    if (
+      listOfCells.some((el: HTMLElement) => el === null) ||
+      listOfCells.some((el: HTMLElement) => el.classList.contains('taken'))
+    )
+      return false
+  }
+  if (isHorizontal) {
+    if (col + (shipLength - 1) > maxGridSize - 1) {
+      return false
+    } else {
+      return true
+    }
+  } else {
+    if (row + (shipLength - 1) > maxGridSize - 1) {
+      return false
+    } else {
+      return true
+    }
+  }
+}
+
+function onShipDragOver(e: any) {
+  e.preventDefault()
+}
+
+function onShipDragDrop(e: any) {
+  // console.log(e.target)
+  // Grab row and column of drop location and parse
+  const row = +e.target.id.split('-')[1]
+  const col = +e.target.id.split('-')[2]
+  const listOfCells = []
+  // check to see if we can place the ship
+  // overflow
+  if (isHorizontal) {
+    for (let i = 0; i < draggedShipLength; i++) {
+      const cell = document.querySelector(
+        `#cell-${row}-${col + i}.grid-cell-me`
+      )
+      listOfCells.push(cell)
+    }
+    if (
+      checkIfShipCanBePlaced(
+        isHorizontal,
+        col,
+        row,
+        draggedShipLength,
+        CELL_PER_ROW,
+        listOfCells
+      )
+    ) {
+      // console.log(cell)
+      for (let i = 0; i < draggedShipLength; i++) {
+        const cell = document.querySelector(
+          `#cell-${row}-${col + i}.grid-cell-me`
+        )
+        cell?.classList.remove(
+          'bg-blue-200',
+          'rounded-md',
+          'hover:bg-blue-400',
+          'hover:cursor-pointer'
+        )
+        cell?.classList.add(
+          `${draggedShipName}-${i}`,
+          draggedShip.classList[7],
+          'taken'
+        )
+      }
+      playerOneShipsContainer?.removeChild(draggedShip)
+    }
+  }
+  if (!isHorizontal) {
+    for (let i = 0; i < draggedShipLength; i++) {
+      const cell = document.querySelector(`#cell-${row + i}-${col}`)
+      listOfCells.push(cell)
+    }
+    if (
+      checkIfShipCanBePlaced(
+        isHorizontal,
+        col,
+        row,
+        draggedShipLength,
+        CELL_PER_ROW,
+        listOfCells
+      )
+    ) {
+      for (let i = 0; i < draggedShipLength; i++) {
+        const cell = document.querySelector(`#cell-${row + i}-${col}`)
+        cell?.classList.remove(
+          'bg-blue-200',
+          'rounded-md',
+          'hover:bg-blue-400',
+          'hover:cursor-pointer'
+        )
+        cell?.classList.add(
+          `${draggedShipName}-${i}`,
+          draggedShip.classList[7],
+          'taken'
+        )
+      }
+      playerOneShipsContainer?.removeChild(draggedShip)
+    }
+  }
+}
+
 function onShipDragStart(e: any) {
-  //@ts-ignore
-  draggedShip = this
-  console.log(draggedShip)
-  //@ts-ignore
-  draggedShipName = this.classlist
-  // draggedShipLength = draggedShip.childnodes.length
-  console.log(draggedShipName)
+  // @ts-ignore
+  draggedShip = e.target
+  // @ts-ignore
+  draggedShipLength = e.target.childNodes.length
+  // @ts-ignore
+  draggedShipName = e.target.classList[1].split('-')[0]
 }
 
 function rotateShip() {
@@ -185,7 +396,11 @@ function createHtmlShipCell(
     `ship-${name}-cell`,
     isEnemy ? 'enemy-ship-cell' : 'my-ship-cell',
     'w-6',
-    'h-6'
+    'h-6',
+    'flex',
+    'flex-row',
+    'items-center',
+    'justify-center'
   )
 
   return shipCell
