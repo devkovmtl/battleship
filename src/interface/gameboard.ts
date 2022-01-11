@@ -1,17 +1,15 @@
 import { Ship } from '.'
-import { Oriention } from '../enum'
 
 interface Gameboard {
   grid: any[][]
-  ships: Ship[]
-  placeCharacter: (
+  placeShipOnGrid: (
     row: number,
     col: number,
     ship: Ship,
-    orientation: Oriention
-  ) => void
+    isHorizontal: boolean
+  ) => boolean | undefined
   receiveAttack: (row: number, col: number) => boolean
-  allShipsSunk: () => boolean
+  doesAllShipsHaveSunk: () => boolean
 }
 
 export { Gameboard }

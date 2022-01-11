@@ -3,6 +3,18 @@ import './index.css'
 import ImageVsBlack from './images/player-versus-player.png'
 // @ts-ignore
 import ImageVsWhite from './images/player-versus-player-white.png'
+import {
+  CELL_PER_ROW,
+  NBR_ROW,
+  NBR_SHIPS,
+  SHIPS_NAME,
+  BG_SHIP,
+} from './constants'
+import { generateRandomNum } from './utils'
+import createPlayer from './Player/player'
+import createGameboard from './Gameboard/gameboard'
+import { Gameboard, Player, Ship } from './interface'
+import createShip from './Ship/ship'
 
 const playerOneName = document.querySelector('.player-one-name')
 const playerOneLives = document.querySelector('.player-one-lives')
@@ -25,28 +37,6 @@ const playerTwoShipsContainer = document.querySelector(
   '.player-two-ships-container'
 )
 
-// Number of cell per row
-const CELL_PER_ROW = 10
-// Number of row
-const NBR_ROW = 10
-// Number of Ships
-const NBR_SHIPS = 5
-// ships name
-const SHIPS_NAME = [
-  'submarine',
-  'destroyer',
-  'cruiser',
-  'battleship',
-  'carrier',
-]
-const BG_SHIP = [
-  'bg-green-300',
-  'bg-yellow-300',
-  'bg-pink-300',
-  'bg-purple-300',
-  'bg-red-300',
-]
-
 let myHtmlGridEl: HTMLElement, enemyHtmlGridEl: HTMLElement
 // Orientation of ship
 let isHorizontal = true
@@ -57,11 +47,42 @@ let draggedShipLength = 0
 // Store the Cpu ship location
 const cpuShipLocation = {}
 
+// old player gameboard and ships
+let player1: Player, player2: Player
+let player1Gameboard: Gameboard, player2GameBoard: Gameboard
+let player1Ships: Ship[] = [],
+  player2Ships: Ship[] = []
+
+//
+let isGameOver = false
+let currentPlayer = ''
+let winner: Player
+
 document.addEventListener('DOMContentLoaded', () => {
   // Load image
   loadImage()
   // @ts-ignore
   whoseTurn?.textContent = 'Loading...'
+  // Create the 2 players
+  player1 = createPlayer('Player One')
+  player2 = createPlayer('Player Two (CPU)')
+  // @ts-ignore
+  playerOneName?.textContent = player1.name
+  currentPlayer = player1.name
+  // @ts-ignore
+  playerTwoName?.textContent = player2.name
+  // Create the two gameboard
+  player1Gameboard = createGameboard(NBR_ROW, CELL_PER_ROW)
+  player2GameBoard = createGameboard(NBR_ROW, CELL_PER_ROW)
+  // create ships
+  for (let i = 0; i < SHIPS_NAME.length; i++) {
+    const ship = createShip(SHIPS_NAME[i], i + 1)
+    player1Ships.push(ship)
+  }
+  for (let i = 0; i < SHIPS_NAME.length; i++) {
+    const ship = createShip(SHIPS_NAME[i], i + 1)
+    player2Ships.push(ship)
+  }
 
   // Build Player One grid
   myHtmlGridEl = createHtmlGrid(NBR_ROW, CELL_PER_ROW, false)
@@ -104,21 +125,118 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })
 
+function gameOver() {
+  console.log('Player One', player1Gameboard.grid)
+  console.log('Player Two', player2GameBoard.grid)
+  alert(`${winner.name} won!!`)
+  return
+}
+
+function checkForWins() {
+  if (player1Gameboard.doesAllShipsHaveSunk()) {
+    winner = player1
+    return true
+  }
+
+  if (player2GameBoard.doesAllShipsHaveSunk()) {
+    winner = player2
+    return true
+  }
+
+  return false
+}
+
+function revealGridCell(
+  row: number,
+  col: number,
+  gb: Gameboard,
+  isEnemy: boolean
+): void {
+  const cell = gb.grid[row][col]
+  let htmlCell: HTMLElement
+  // if enemy attack our grid so reveal our grid
+  if (isEnemy) {
+    // @ts-ignore
+    htmlCell = document.querySelector(`#cell-${row}-${col}.grid-cell-me`)
+  }
+  // if not enemy then attack other grid reveal enemy grid
+  if (!isEnemy) {
+    // @ts-ignore
+    htmlCell = document.querySelector(`#cell-${row}-${col}.grid-cell-enemy`)
+  }
+
+  if (cell === 'HIT') {
+    // @ts-ignore
+    htmlCell?.textContent = '🔥'
+  }
+  if (cell === 'MISS') {
+    // @ts-ignore
+    htmlCell?.textContent = '🌊'
+  }
+}
+
+function computerPlay() {
+  player2.randomAttack(player1Gameboard)
+  const cpuListAttack = Object.keys(player2.listAttack)
+  const row = +cpuListAttack[cpuListAttack.length - 1].split('-')[0]
+  const col = +cpuListAttack[cpuListAttack.length - 1].split('-')[1]
+  revealGridCell(row, col, player1Gameboard, true)
+  // revealGridCell(row, col, player1Gameboard, false)
+  if (checkForWins()) {
+    isGameOver = true
+  }
+  currentPlayer = player1.name
+  playGame()
+}
+
+function playGame() {
+  // console.log('Player One', player1Gameboard.grid)
+  // console.log('Player Two', player2GameBoard.grid)
+  if (isGameOver) {
+    gameOver()
+  }
+
+  if (currentPlayer === player1.name) {
+    console.log(cpuShipLocation)
+    // @ts-ignore
+    whoseTurn?.textContent = player1.name
+    document.querySelectorAll('.grid-cell-enemy').forEach((cell) =>
+      cell.addEventListener('click', (e) => {
+        // @ts-ignore
+        const row = +e.target.id.split('-')[1]
+        // @ts-ignore
+        const col = +e.target.id.split('-')[2]
+        player1.attack(row, col, player2GameBoard)
+        revealGridCell(row, col, player2GameBoard, false)
+        if (checkForWins()) {
+          isGameOver = true
+        }
+        // @ts-ignore
+        currentPlayer = player2.name
+        playGame()
+      })
+    )
+  }
+  if (currentPlayer === player2.name) {
+    // @ts-ignore
+    whoseTurn?.textContent = player2.name
+    setTimeout(computerPlay, 1000)
+  }
+}
+
 function startGame() {
-  console.log(cpuShipLocation)
   if (playerOneShipsContainer?.childNodes.length !== 0) {
     alert('Please place all your ships.')
     return
   }
-  console.log('start')
+  // @ts-ignore
+  whoseTurn?.textContent = currentPlayer
+  // while (player1Ships.length > 0 && player2Ships.length > 0) {}
+  playGame()
 }
 
 function resetGame() {
   location.reload()
-}
-
-function generateRandomNum(max: number): number {
-  return Math.floor(Math.random() * max)
 }
 
 function generateCpuLocation(max: number) {
@@ -176,6 +294,12 @@ function placeCpuShip(ship: any) {
         cpuShipLocation[`${row}-${col + i}`] = `${shipName}-${i}`
       }
 
+      // place the ship on gameboard
+      const sh = player2Ships.find((s) => s.name === shipName)
+      if (sh) {
+        player2GameBoard.placeShipOnGrid(row, col, sh, isHorizontal)
+      }
+
       playerTwoShipsContainer?.removeChild(ship)
     } else {
       placeCpuShip(ship)
@@ -214,7 +338,11 @@ function placeCpuShip(ship: any) {
         // @ts-ignore
         cpuShipLocation[`${row + i}-${col}`] = `${shipName}-${i}`
       }
-
+      // place the ship on gameboard
+      const sh = player2Ships.find((s) => s.name === shipName)
+      if (sh) {
+        player2GameBoard.placeShipOnGrid(row, col, sh, isHorizontal)
+      }
       playerTwoShipsContainer?.removeChild(ship)
     } else {
       placeCpuShip(ship)
@@ -298,6 +426,11 @@ function onShipDragDrop(e: any) {
           'taken'
         )
       }
+      // place the ship on gameboard
+      const ship = player1Ships.find((s) => s.name === draggedShipName)
+      if (ship) {
+        player1Gameboard.placeShipOnGrid(row, col, ship, isHorizontal)
+      }
       playerOneShipsContainer?.removeChild(draggedShip)
     }
   }
@@ -329,6 +462,11 @@ function onShipDragDrop(e: any) {
           draggedShip.classList[7],
           'taken'
         )
+      }
+      // place the ship on gameboard
+      const ship = player1Ships.find((s) => s.name === draggedShipName)
+      if (ship) {
+        player1Gameboard.placeShipOnGrid(row, col, ship, isHorizontal)
       }
       playerOneShipsContainer?.removeChild(draggedShip)
     }

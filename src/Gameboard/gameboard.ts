@@ -1,7 +1,7 @@
-import { Ship } from '../interface'
+import { Gameboard, Ship } from '../interface'
 import { createArrayOfArray } from '../utils'
 
-function createGameboard(row: number = 10, col: number = 10) {
+function createGameboard(row: number = 10, col: number = 10): Gameboard {
   if (row <= 0) {
     row = 10
   }

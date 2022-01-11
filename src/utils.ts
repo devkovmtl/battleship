@@ -49,4 +49,8 @@ const createArrayOfArray = (
   return grid
 }
 
-export { createArrayOfString, createArrayOfArray }
+function generateRandomNum(max: number): number {
+  return Math.floor(Math.random() * max)
+}
+
+export { createArrayOfString, createArrayOfArray, generateRandomNum }

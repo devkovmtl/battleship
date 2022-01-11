@@ -1,14 +1,10 @@
-import { Gameboard, Ship } from '.'
-import { PlayerType } from '../enum'
+import { Gameboard } from '.'
 
 interface Player {
   name: string
-  playerType: PlayerType
-  gameBoard: Gameboard
-  ships: Ship[]
-  attackEnemyBoard: (r: number, c: number, gb: Gameboard) => boolean
-  allShipsSunk: () => boolean
-  placeRandomShip: (ship: Ship) => void
+  listAttack: {}
+  attack: (r: number, c: number, gb: Gameboard) => boolean
+  randomAttack: (gb: Gameboard) => boolean
 }
 
 export { Player }

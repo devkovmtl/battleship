@@ -1,19 +1,21 @@
-export const SUBMARINE = 'SUBMARINE'
-export const SUBMARINE_LENGTH = 1
-
-export const DESTROYER = 'DESTROYER'
-export const DESTROYER_LENGTH = 2
-
-export const CRUISER = 'CRUISER'
-export const CRUISER_LENGTH = 3
-
-export const BATTLESHIP = 'BATTLESHIP'
-export const BATTLESHIP_LENGTH = 4
-
-export const CARRIER = 'CARRIER'
-export const CARRIER_LENGTH = 5
-
-export const WATER = '💧'
-export const BOAT = '🚢'
-export const MISS = '🌊'
-export const HIT = '🔥'
+// Number of cell per row
+export const CELL_PER_ROW = 10
+// Number of row
+export const NBR_ROW = 10
+// Number of Ships
+export const NBR_SHIPS = 5
+// ships name
+export const SHIPS_NAME = [
+  'submarine',
+  'destroyer',
+  'cruiser',
+  'battleship',
+  'carrier',
+]
+export const BG_SHIP = [
+  'bg-green-300',
+  'bg-yellow-300',
+  'bg-pink-300',
+  'bg-purple-300',
+  'bg-red-300',
+]

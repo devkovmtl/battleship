@@ -1,4 +1,8 @@
-import { createArrayOfString, createArrayOfArray } from '../src/utils'
+import {
+  createArrayOfString,
+  createArrayOfArray,
+  generateRandomNum,
+} from '../src/utils'
 
 describe('test create an array', () => {
   it('should throw an error if no args passed', () => {
@@ -75,10 +79,10 @@ describe('test create an array of array', () => {
   })
 })
 
-// describe('test return number from random function', () => {
-//   it('should return a number between max', () => {
-//     expect(typeof getRandomInt(2) === 'number').toBeTruthy()
-//     expect(getRandomInt(2)).not.toBeNull()
-//     expect(getRandomInt(2)).toBeLessThanOrEqual(2)
-//   })
-// })
+describe('test return number from random function', () => {
+  it('should return a number between max', () => {
+    expect(typeof generateRandomNum(2) === 'number').toBeTruthy()
+    expect(generateRandomNum(2)).not.toBeNull()
+    expect(generateRandomNum(2)).toBeLessThanOrEqual(2)
+  })
+})
