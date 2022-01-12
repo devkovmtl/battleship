@@ -126,8 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 function gameOver() {
-  console.log('Player One', player1Gameboard.grid)
-  console.log('Player Two', player2GameBoard.grid)
+  // console.log('Player One', player1Gameboard.grid)
+  // console.log('Player Two', player2GameBoard.grid)
   alert(`${winner.name} won!!`)
   return
 }
@@ -139,11 +139,35 @@ function checkForWins() {
   }
 
   if (player2GameBoard.doesAllShipsHaveSunk()) {
-    winner = player2
+    winner = player1
     return true
   }
 
   return false
+}
+
+function reduceLife(isEnemy: boolean) {
+  let totalP1 = 0
+  let totalP2 = 0
+
+  for (let i = 0; i < player1Ships.length; i++) {
+    const element = player1Ships[i]
+    if (element.isSunk()) {
+      totalP1++
+    }
+  }
+
+  for (let i = 0; i < player2Ships.length; i++) {
+    const element = player2Ships[i]
+    if (element.isSunk()) {
+      totalP2++
+    }
+  }
+
+  // @ts-ignore
+  playerOneLives?.textContent = `${5 - totalP1}`
+  // @ts-ignore
+  playerTwoLives?.textContent = `${5 - totalP2}`
 }
 
 function revealGridCell(
@@ -185,7 +209,24 @@ function computerPlay() {
   if (checkForWins()) {
     isGameOver = true
   }
+  reduceLife(true)
   currentPlayer = player1.name
+  playGame()
+}
+
+function playerPlay(e: any) {
+  // @ts-ignore
+  const row = +e.target.id.split('-')[1]
+  // @ts-ignore
+  const col = +e.target.id.split('-')[2]
+  player1.attack(row, col, player2GameBoard)
+  revealGridCell(row, col, player2GameBoard, false)
+  if (checkForWins()) {
+    isGameOver = true
+  }
+  reduceLife(false)
+  // @ts-ignore
+  currentPlayer = player2.name
   playGame()
 }
 
@@ -197,30 +238,18 @@ function playGame() {
   }
 
   if (currentPlayer === player1.name) {
-    console.log(cpuShipLocation)
+    // console.log(cpuShipLocation)
     // @ts-ignore
     whoseTurn?.textContent = player1.name
-    document.querySelectorAll('.grid-cell-enemy').forEach((cell) =>
-      cell.addEventListener('click', (e) => {
-        // @ts-ignore
-        const row = +e.target.id.split('-')[1]
-        // @ts-ignore
-        const col = +e.target.id.split('-')[2]
-        player1.attack(row, col, player2GameBoard)
-        revealGridCell(row, col, player2GameBoard, false)
-        if (checkForWins()) {
-          isGameOver = true
-        }
-        // @ts-ignore
-        currentPlayer = player2.name
-        playGame()
-      })
-    )
+    document
+      .querySelectorAll('.grid-cell-enemy')
+      .forEach((cell) => cell.addEventListener('click', playerPlay))
   }
   if (currentPlayer === player2.name) {
     // @ts-ignore
     whoseTurn?.textContent = player2.name
-    setTimeout(computerPlay, 1000)
+    computerPlay()
+    // setTimeout(computerPlay, 1000)
   }
 }
 

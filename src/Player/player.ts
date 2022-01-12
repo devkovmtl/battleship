@@ -4,12 +4,12 @@ import { generateRandomNum } from '../utils'
 function createPlayer(name: string): Player {
   let listAttack = {}
 
-  function generateCpuLocation(max: number) {
+  function generateCpuAttackLocation(max: number) {
     const row = generateRandomNum(max)
     const col = generateRandomNum(max)
     // @ts-ignore
     if (listAttack[`${row}-${col}`]) {
-      generateCpuLocation(max)
+      generateCpuAttackLocation(max)
     }
 
     return { row, col }
@@ -22,7 +22,7 @@ function createPlayer(name: string): Player {
       return gameboard.receiveAttack(row, col)
     },
     randomAttack: function (gameboard: Gameboard) {
-      const { row, col } = generateCpuLocation(gameboard.grid.length)
+      const { row, col } = generateCpuAttackLocation(gameboard.grid.length)
       // @ts-ignore
       listAttack[`${row}-${col}`] = true
       return gameboard.receiveAttack(row, col)
