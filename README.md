@@ -1,8 +1,8 @@
 # PROJECT: BATTLESHIP
 
-from The Odin Project's [curriculum](https://github.com/devkovmtl/battleship)
+from The Odin Project's [curriculum](https://www.theodinproject.com/paths/full-stack-javascript/courses/javascript/lessons/battleship)
 
-A simple Todo List
+Battleship game to play against the computer
 
 Project [demo](https://devkovmtl.github.io/battleship/)
 
